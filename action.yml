@@ -1,0 +1,37 @@
+name: 'unity-ci-self-hosted-uploader'
+description: 'Unity CI self-hosted uploading action'
+author: 'Marco Selleri <marco.selleri96@gmail.com>'
+
+branding:
+  icon: 'heart'
+  color: 'blue'
+
+inputs:
+  storage: 
+    description: 'Which storage to use for the upload. Allowed values: "google", "local"'
+    required: true
+    default: 'google'
+
+  localDestinationFolder: 
+    description: 'Destination folder for the local storage. Required if storage is set to "local"'
+    required: false
+
+  googleOauthClientId: 
+    description: 'Google OAuth client ID. Required if storage is set to "google"'
+    required: false
+  googleOauthClientSecret: 
+    description: 'Google OAuth client secret. Required if storage is set to "google"'
+    required: false
+  googleOauthRedirectUri: 
+    description: 'Google OAuth redirect URI. Required if storage is set to "google"'
+    required: false
+  googleOauthRefreshToken: 
+    description: 'Google OAuth refresh token. Required if storage is set to "google"'
+    required: false
+  googleFolderId: 
+    description: 'Google Drive folder ID. Required if storage is set to "google"'
+    required: false
+  
+runs:
+  using: node20
+  main: dist/index.js
