@@ -1,22 +1,24 @@
 import * as core from '@actions/core'
 import { runCommand } from "unity-ci-self-hosted-common/dist";
 import { logLines } from "unity-ci-self-hosted-common/dist";
-import { join, isAbsolute } from 'path'
+import { join, isAbsolute, extname } from 'path'
 import { variables } from './input'
 import  * as google from './google/google';
 import  * as local from './local/local';
 import { zipFolder } from './zip/zip';
 
-
 export async function run() {
 
   try {
 
-    const archiveFileName = variables.archiveFileName.value
+    if (extname(variables.archiveFileName.value)) {
+      throw new Error(`Archive file name should not contain an extension. Found: ${variables.archiveFileName.value}`)
+    }
+    const archiveFileName = variables.archiveFileName.value + ".7z"
+
 
     const archiveFoldFullPath = isAbsolute(variables.archiveFolder.value) ? 
     variables.archiveFolder.value : join(variables.GITHUB_WORKSPACE.value, variables.archiveFolder.value)
-
     const archiveFileFullPath = join(archiveFoldFullPath, archiveFileName)
 
     await zipFolder(
