@@ -26,7 +26,7 @@ export async function zipFolder(
         command = join(
             mainModuleDir,
             basename(mainModuleDir) === "src" ? "../dist" : "",
-            "windows/7z.exe"
+            "windows/7zr.exe"
         );
     } else throw new Error("Cannot determine the main module");
 
