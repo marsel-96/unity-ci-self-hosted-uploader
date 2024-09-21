@@ -1,10 +1,6 @@
-import {
-    google,   // The top level object used to access services
-    drive_v3, // For every service client, there is an exported namespace
-    Auth,     // Namespace for auth related types
-    Common,   // General types used throughout the library
-} from 'googleapis';
-import fs from 'fs';
+import { google, Auth, drive_v3 } from 'googleapis';
+import { stat } from 'fs/promises';
+import { createReadStream } from 'fs';
 import { googleVariables } from './input';
 import { validateVariables } from 'unity-ci-self-hosted-common/dist';
 
@@ -66,30 +62,54 @@ export async function uploadFile(
     validateVariables(googleVariables);
 
     const api = getApi();
+    const fileSize = await stat(filePath).then((stats) => stats.size);
 
-    console.log(`Uploading file ${filePath} to Google Drive.`);
+    console.log(`--------------------------------------------------------------------`)
+    console.log(`Using Google Drive.`);
+    console.log(`Uploading file ${filePath}`);
+    console.log(`File size: ${Math.round(fileSize / (1024*1024))} MB`);
+    console.log(`--------------------------------------------------------------------`)
 
-    return api.files.create({
-        requestBody: {
-            name: fileName,
-            parents: [googleVariables.googleFolderId.value]
-        },
-        media: {
-            mimeType: fileType,
-            body: fs.createReadStream(filePath)
-        },
-        fields: "id,webViewLink"
-    })
-    .then((res) =>
-    {
+    let printProgess = true
+
+    try {
+
+        const response = await api.files.create(
+            {
+                requestBody: {
+                    name: fileName,
+                    parents: [googleVariables.googleFolderId.value]
+                },
+                media: {
+                    mimeType: fileType,
+                    body: createReadStream(filePath)
+                },
+                fields: "id,webViewLink"
+            },
+            {
+                onUploadProgress: (evt) => {
+                const progress = (evt.bytesRead / fileSize * 100) ;
+                if (printProgess || progress === 100.0) {
+                    console.log(`Progress: ${progress.toFixed(1)}%`);
+                    setTimeout(() => printProgess = true, 250)
+                    printProgess = false
+                }
+                },
+            }
+        )
+
         const result = {
-            id: res.data?.id ?? _throw("Missing 'id' field in response"),
-            webViewLink: res.data?.webViewLink ?? _throw("Missing 'webViewLink' field in response")
+            id: response.data?.id ?? _throw("Missing 'id' field in response"),
+            webViewLink: response.data?.webViewLink ?? _throw("Missing 'webViewLink' field in response")
         }
+
+        console.log(`--------------------------------------------------------------------`)
         console.log(`File uploaded successfully! \nWeb Link: ${result.webViewLink}`);
+        console.log(`--------------------------------------------------------------------`)
+
         return result;
-    })
-    .catch((err) => {
+
+    } catch(err) {
         throw new Error(`Failed to upload file: ${err}`);
-    });
+    };
 }

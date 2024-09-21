@@ -32,7 +32,7 @@ export async function run() {
         )
       } break;
       case 'google': {
-        google.uploadFile(
+        await google.uploadFile(
           archiveFileName, 
           archiveFileFullPath,
         )

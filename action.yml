@@ -19,7 +19,7 @@ inputs:
   zipCompressionLevel: 
     description: 'Compression level of the zip file. Allowed values: 0-9'
     required: false
-    default: '9'
+    default: '2'
 
   storage: 
     description: 'Which storage to use for the upload. Allowed values: "google", "local"'
