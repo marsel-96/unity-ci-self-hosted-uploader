@@ -11,12 +11,7 @@ export async function run() {
 
   try {
 
-    if (extname(variables.archiveFileName.value)) {
-      throw new Error(`Archive file name should not contain an extension. Found: ${variables.archiveFileName.value}`)
-    }
     const archiveFileName = variables.archiveFileName.value + ".7z"
-
-
     const archiveFoldFullPath = isAbsolute(variables.archiveFolder.value) ? 
     variables.archiveFolder.value : join(variables.GITHUB_WORKSPACE.value, variables.archiveFolder.value)
     const archiveFileFullPath = join(archiveFoldFullPath, archiveFileName)
