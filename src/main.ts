@@ -12,33 +12,29 @@ export async function run() {
 
   try {
 
-    const buildArchiveName = variables.unityBuildArchiveFileName.value
-    if (!buildArchiveName.endsWith('.zip')) {
-      throw new Error(`Invalid archive file name: ${buildArchiveName}. Must end with '.zip'`)
-    }
+    const archiveFileName = variables.archiveFileName.value
 
-    const buildArchiveBasePath = isAbsolute(variables.unityBuildArchiveFolder.value) ? 
-    variables.unityBuildArchiveFolder.value : join(variables.GITHUB_WORKSPACE.value, variables.unityBuildArchiveFolder.value)
-    const buildArchiveFullPath = join(buildArchiveBasePath, buildArchiveName)
-    const toArchiveFolderPath = variables.unityBuildPath.value
+    const archiveFoldFullPath = isAbsolute(variables.archiveFolder.value) ? 
+    variables.archiveFolder.value : join(variables.GITHUB_WORKSPACE.value, variables.archiveFolder.value)
+
+    const archiveFileFullPath = join(archiveFoldFullPath, archiveFileName)
 
     await zipFolder(
-      toArchiveFolderPath, 
-      buildArchiveFullPath, 
-      true
+      variables.buildFolderFullPath.value, 
+      archiveFileFullPath
     );
 
     switch (variables.storage.value) {
       case 'local': {
         await local.uploadFile(
-          buildArchiveName, 
-          buildArchiveFullPath,
+          archiveFileName, 
+          archiveFileFullPath,
         )
       } break;
       case 'google': {
         google.uploadFile(
-          buildArchiveName, 
-          buildArchiveFullPath,
+          archiveFileName, 
+          archiveFileFullPath,
         )
       } break;
       default: throw new Error(`Unknown upload location: ${variables.storage.value}`)

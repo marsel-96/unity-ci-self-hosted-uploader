@@ -7,6 +7,20 @@ branding:
   color: 'blue'
 
 inputs:
+  buildFolderFullPath: 
+      description: 'Full path of the build folder to zip'
+      required: true
+  archiveFileName: 
+    description: 'Name of the file to upload. Generated after zippping the build folder'
+    required: true
+  archiveFolder: 
+    description: 'Loation where to temporary save the archive'
+    required: false
+  zipCompressionLevel: 
+    description: 'Compression level of the zip file. Allowed values: 0-9'
+    required: false
+    default: '9'
+
   storage: 
     description: 'Which storage to use for the upload. Allowed values: "google", "local"'
     required: true

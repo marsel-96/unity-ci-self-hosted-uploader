@@ -1,12 +1,22 @@
-import { logLines, runCommand } from "unity-ci-self-hosted-common/dist";
+import { logLines, runCommand, validateVariables, VariableValue } from "unity-ci-self-hosted-common/dist";
 import { join, dirname, basename } from "path";
 import { variables } from "src/input";
+import * as core from '@actions/core'
+
+
+type Value = VariableValue;
+
+let zipVariables = {
+    zipCompressionLevel:  <Value>{ value: core.getInput('zipCompressionLevel'), mandatory: false, default: "2" }
+}
 
 export async function zipFolder(
     toArchiveFolderPath: string, 
     zipOutputFilePath: string,
     zstd: boolean = false
 ) {
+
+    validateVariables(zipVariables);
 
     // Check if the script is the main module
     let command;
@@ -22,8 +32,8 @@ export async function zipFolder(
 
     const args = [
         'a', toArchiveFolderPath,
-        "-m0=LZMA2",
-        '-mx2', 
+        '-m0=LZMA2',
+        `-mx${zipVariables.zipCompressionLevel.value}`, 
         zipOutputFilePath
     ]
 

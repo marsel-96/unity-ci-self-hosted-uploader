@@ -10,19 +10,13 @@ export let variables = {
 
     // Github action inputs
     storage:            <Value>{ value: core.getInput('storage'),           mandatory: true},
-    unityBuildPath:     <Value>{ value: core.getInput('unityBuildPath'),    mandatory: true},
-    unityBuildName:     <Value>{ value: core.getInput('unityBuildName'),    mandatory: true},
-    unityBuildVersion:  <Value>{ value: core.getInput('unityBuildVersion'), mandatory: true},
-    unityBuildTarget:   <Value>{ value: core.getInput('unityBuildTarget'),  mandatory: true},
-    unityBuildArchiveFolder: <Value>{ 
-        value: core.getInput('unityBuildArchiveFolder'),    
+    
+    buildFolderFullPath:    <Value>{ value: core.getInput('buildFolderFullPath'),   mandatory: true},
+    archiveFileName:  <Value>{ value: core.getInput('archiveFileName'), mandatory: true},
+    archiveFolder: <Value>{ 
+        value: core.getInput('archiveFolder'),    
         mandatory: false,
         default: process.env.GITHUB_WORKSPACE
-    },
-    unityBuildArchiveFileName: <Value>{ 
-        value: core.getInput('unityBuildArchiveFileName'), 
-        mandatory: false, 
-        default: `${core.getInput('unityBuildName')}_${core.getInput('unityBuildVersion')}.zip`
     },
 };
 
