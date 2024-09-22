@@ -1,7 +1,5 @@
 import * as core from '@actions/core'
-import { runCommand } from "unity-ci-self-hosted-common/dist";
-import { logLines } from "unity-ci-self-hosted-common/dist";
-import { join, isAbsolute, extname } from 'path'
+import { join, isAbsolute } from 'path'
 import { variables } from './input'
 import  * as google from './google/google';
 import  * as local from './local/local';
@@ -38,11 +36,13 @@ export async function run() {
     }
 
   } catch (error) {
+
     if (error instanceof Error) {
-      console.error(error)
-      core.setFailed("Error during upload run")
+      core.error(error)
     }
-    else core.setFailed("An unexpected error occurred")
+    else core.error("An unexpected error occurred")
+
+    core.setFailed("Error during upload run")
   }
 
 }

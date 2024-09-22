@@ -9,10 +9,9 @@ export let variables = {
     GITHUB_WORKSPACE:   <Value>{ value: process.env.GITHUB_WORKSPACE, mandatory: true },
 
     // Github action inputs
-    storage:            <Value>{ value: core.getInput('storage'),           mandatory: true},
-    
+    storage:                <Value>{ value: core.getInput('storage'),           mandatory: true},
     buildFolderFullPath:    <Value>{ value: core.getInput('buildFolderFullPath'),   mandatory: true},
-    archiveFileName:  <Value>{ value: core.getInput('archiveFileName'), mandatory: true},
+    archiveFileName:        <Value>{ value: core.getInput('archiveFileName'), mandatory: true},
     archiveFolder: <Value>{ 
         value: core.getInput('archiveFolder'),    
         mandatory: false,

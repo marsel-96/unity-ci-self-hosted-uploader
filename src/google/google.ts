@@ -3,6 +3,8 @@ import { stat } from 'fs/promises';
 import { createReadStream } from 'fs';
 import { googleVariables } from './input';
 import { validateVariables } from 'unity-ci-self-hosted-common/dist';
+import * as logging from "unity-ci-self-hosted-common/dist";
+import * as core from '@actions/core'
 
 type API = drive_v3.Drive;
 
@@ -73,7 +75,8 @@ export async function uploadFile(
     let printProgess = true
 
     try {
-
+        
+        core.startGroup('Upload file')
         const response = await api.files.create(
             {
                 requestBody: {
@@ -97,19 +100,22 @@ export async function uploadFile(
                 },
             }
         )
+        
+        core.endGroup()
 
         const result = {
             id: response.data?.id ?? _throw("Missing 'id' field in response"),
             webViewLink: response.data?.webViewLink ?? _throw("Missing 'webViewLink' field in response")
         }
-
+        
         console.log(`--------------------------------------------------------------------`)
-        console.log(`File uploaded successfully! \nWeb Link: ${result.webViewLink}`);
+        logging.logWithStyle(`File uploaded successfully! \nWeb Link: ${result.webViewLink}`, logging.ForegroundColor.Green)
         console.log(`--------------------------------------------------------------------`)
 
         return result;
 
-    } catch(err) {
-        throw new Error(`Failed to upload file: ${err}`);
+    } catch(error) {
+        core.endGroup()
+        throw new Error('Exception while uploading file.', {cause: error})
     };
 }

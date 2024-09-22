@@ -1,6 +1,7 @@
 import { runCommand, validateVariables, VariableValue } from "unity-ci-self-hosted-common/dist";
 import { join, dirname, basename } from "path";
 import * as core from '@actions/core'
+import * as logging from "unity-ci-self-hosted-common/dist";
 
 type Value = VariableValue;
 
@@ -28,11 +29,12 @@ export async function zipFolder(
         );
     } else throw new Error("Cannot determine the main module");
 
+    const toArchiveFolderPathWildcard = join(toArchiveFolderPath, "*");
     const args = [
         'a', zipOutputFilePath,
         '-m0=LZMA2',
         `-mx${zipVariables.zipCompressionLevel.value}`, 
-        toArchiveFolderPath
+        toArchiveFolderPathWildcard
     ]
 
     console.log(`--------------------------------------------------------------------`)
@@ -43,17 +45,20 @@ export async function zipFolder(
     let exitCode = 0
     
     try {
+        core.startGroup('Zip file')
         exitCode = await runCommand(command, args)
+        core.endGroup()
     } catch (error) {
-        console.error(`Exception while zipping folder!`)
-        throw error
+        core.endGroup()
+        throw new Error(`Exception while zipping folder!`, {cause: error})
     }
 
     if (exitCode !== 0) {
         throw new Error(`\nZipping folder operation failed! Exit code: ${exitCode}`);
     }
+    
 
     console.log(`--------------------------------------------------------------------`)
-    console.log( `Zip file created Successfully!`)
+    logging.logWithStyle('Zip file created Successfully!', logging.ForegroundColor.Green)
     console.log(`--------------------------------------------------------------------`)
 }
